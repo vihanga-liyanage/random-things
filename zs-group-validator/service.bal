@@ -53,7 +53,7 @@ service / on new http:Listener(9090) {
             };
         }
 
-        string[] allowedGroups = [];
+        string allowedGroups = "";
 
         foreach string group in payload.groups {
             log:printInfo("Checking group: " + group);
@@ -61,7 +61,7 @@ service / on new http:Listener(9090) {
             scim:UserSearch searchData = { filter: string `userName eq ${username}`, schemas: ["urn:ietf:params:scim:api:messages:2.0:SearchRequest"] };
             scim:UserResponse response = check scimClient->searchUser(searchData);
 
-            //log:printInfo(response.toBalString());
+            // log:printInfo(response.toBalString());
             
             if response.totalResults > 0 {
                 scim:UserResource[] userResources = response.Resources ?: [];
@@ -78,7 +78,7 @@ service / on new http:Listener(9090) {
                     if utcNow < utcExpiry {
 
                         log:printInfo("Group " + group + " is allowed.");
-                        allowedGroups.push(group);
+                        allowedGroups += group + ",";
                     } else {
                         log:printInfo("Group " + group + " is NOT allowed.");
                     }
