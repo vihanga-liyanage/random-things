@@ -82,6 +82,8 @@ service / on new http:Listener(9090) {
                     } else {
                         log:printInfo("Group " + group + " is NOT allowed.");
                     }
+                } else {
+                    log:printInfo("Group " + group + " is ignored.");
                 }
             }
         }
