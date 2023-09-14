@@ -2,7 +2,7 @@
   observabilityIncluded = true
 
 [package]
-  distribution = "2201.6.0"
+  distribution = "2201.7.1"
   name = "zs_group_validator"
   org = "gardeoinsurance"
   version = "0.1.0"
