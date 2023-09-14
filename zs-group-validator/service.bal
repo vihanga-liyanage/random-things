@@ -3,6 +3,7 @@ import ballerina/log;
 
 import ballerinax/scim;
 import ballerina/time;
+import ballerina/regex;
 
 configurable string orgName = ?;
 configurable string clientId = ?;
@@ -35,7 +36,7 @@ scim:Client scimClient = check new (scimConfig);
 
 type Payload record {
     string user;
-    string[] groups;
+    string groups;
 };
 
 # A service representing a network-accessible API
@@ -46,16 +47,17 @@ service / on new http:Listener(9090) {
 
         log:printInfo("canImpersonate call received =========");
 
-        if payload.user is "" || payload.groups.length() == 0 {
+        if payload.user == "" || payload.groups == "" {
             return {
                 status: "Failure",
                 message: "User and groups should not be empty!"
             };
         }
 
+        string[] groups = regex:split(payload.groups, ",");
         string allowedGroups = "";
 
-        foreach string group in payload.groups {
+        foreach string group in groups {
             log:printInfo("Checking group: " + group);
             string username = "DEFAULT/" + group + "@zs.com";
             scim:UserSearch searchData = { filter: string `userName eq ${username}`, schemas: ["urn:ietf:params:scim:api:messages:2.0:SearchRequest"] };
