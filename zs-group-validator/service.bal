@@ -8,20 +8,7 @@ import ballerina/regex;
 configurable string orgName = ?;
 configurable string clientId = ?;
 configurable string clientSecret = ?;
-configurable string[] scope = [
-    "internal_user_mgt_view",
-    "internal_user_mgt_list",
-    "internal_user_mgt_create",
-    "internal_user_mgt_delete",
-    "internal_user_mgt_update",
-    "internal_user_mgt_delete",
-    "internal_group_mgt_view",
-    "internal_group_mgt_list",
-    "internal_group_mgt_create",
-    "internal_group_mgt_delete",
-    "internal_group_mgt_update",
-    "internal_group_mgt_delete"
-];
+configurable string[] scope = ["internal_user_mgt_list"];
 
 //Create a SCIM connector configuration
 scim:ConnectorConfig scimConfig = {
@@ -45,14 +32,14 @@ service / on new http:Listener(9090) {
 
     resource function post validateGroups(@http:Payload Payload payload) returns json|error {
 
-        log:printInfo("canImpersonate call received =========");
-
         if payload.user == "" || payload.groups == "" {
             return {
                 status: "Failure",
                 message: "User and groups should not be empty!"
             };
         }
+
+        log:printInfo("validateGroups call received - " + payload.groups);
 
         string[] groups = regex:split(payload.groups, ",");
         string allowedGroups = "";
