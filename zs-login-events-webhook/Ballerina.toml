@@ -1,9 +1,0 @@
-[build-options]
-  observabilityIncluded = true
-
-[package]
-  distribution = "2201.6.0"
-  name = "zs_login_events_webhook"
-  org = "gardeoinsurance"
-  version = "0.1.0"
-
