@@ -28,11 +28,6 @@ type Role record {|
     RoleAttribute[] attributes;
 |};
 
-type Attribute record {|
-    string attributeId;
-    string attributeValue;
-|};
-
 type OrgAttributeMetadata record {|
     string orgId;
     AttributeMetadata[] attributes;

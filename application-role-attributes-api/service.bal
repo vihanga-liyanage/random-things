@@ -116,7 +116,7 @@ service / on new http:Listener(9090) {
         }
         
         io:println(results);
-        
+
         RoleAttribute[] atrs = [];
 
         foreach RoleAttributeRecord r in results {
@@ -139,34 +139,28 @@ service / on new http:Listener(9090) {
         return role;
     }
 
-    resource function post o/[string orgId]/applications/[string appId]/roles/[string roleName]/attributes(Attribute attribute) 
+    resource function post o/[string orgId]/applications/[string appId]/roles/[string roleName]/attributes(string attributeId, string attributeValue) 
         returns json|http:NotFound|http:BadRequest|http:Conflict|http:Created|error {
 
-        if attribute.attributeId == "" {
+        if attributeId == "" {
             http:BadRequest b = {body: {msg: "Attribute ID cannot be empty"}};
             return b;
         }
 
+        // TODO : Check validity of OrgId, AppId, RoleName combo
+        
         // check if the attribute ID is valid
         table<AttributeMetadataRecord> attributeRecord = from AttributeMetadataRecord r in attributeMetadataTable
-            where r.orgId == orgId && r.attributeId == attribute.attributeId
+            where r.orgId == orgId && r.attributeId == attributeId
             select r;
         if attributeRecord.length() != 1 {
             http:BadRequest b = {body: {msg: "Attribute ID is invalid"}};
             return b;
         }
-
-        table<RoleAttributeRecord> results = from RoleAttributeRecord r in roleAttributesTable 
-            where r.orgId == orgId && r.appId == appId && r.roleName == roleName
-            select r;
-
-        if results.length() == 0 {
-            return http:NOT_FOUND;
-        }
         
         // Check if the same attribute exists in the role
         table<RoleAttributeRecord> results_2 = from RoleAttributeRecord r in roleAttributesTable 
-            where r.orgId == orgId && r.appId == appId && r.roleName == roleName && r.attributeId == attribute.attributeId
+            where r.orgId == orgId && r.appId == appId && r.roleName == roleName && r.attributeId == attributeId
             select r;
 
         if results_2.length() != 0 {
@@ -179,8 +173,8 @@ service / on new http:Listener(9090) {
             orgId: orgId, 
             appId: appId, 
             roleName: roleName, 
-            attributeId: attribute.attributeId, 
-            attributeValue: attribute.attributeValue
+            attributeId: attributeId, 
+            attributeValue: attributeValue
         });
 
         return http:CREATED;
